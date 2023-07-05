@@ -17,8 +17,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {
-    this.nonceSecret = this.configService.get('NONCE_SECRET');
-    this.nonceExpiresIn = this.configService.get('NONCE_EXPIRES_IN');
+    const nonceDetails = this.configService.get('NONCE');
+    this.nonceSecret = nonceDetails.SECRET;
+    this.nonceExpiresIn = nonceDetails.EXPIRES_IN;
   }
 
   generateChallenge(): string {

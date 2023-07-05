@@ -6,6 +6,8 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
+import configuration from '../config/configuration';
+import { DBModule } from './db/db.module';
 
 @Module({
   imports: [
@@ -28,7 +30,11 @@ import { ConfigModule } from '@nestjs/config';
         }),
       ],
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
+    }),
+    DBModule.forRoot({ entities: [] }),
     AuthModule,
   ],
   controllers: [AppController],
