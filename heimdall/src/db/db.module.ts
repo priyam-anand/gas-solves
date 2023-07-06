@@ -10,7 +10,7 @@ export class DBModule {
 
     connectionOptions = {
       ...connectionOptions,
-      synchronize: false,
+      synchronize: true,
       entities: dbConfig.entities,
     };
     return connectionOptions;

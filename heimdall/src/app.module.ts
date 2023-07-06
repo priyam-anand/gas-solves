@@ -8,6 +8,7 @@ import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { DBModule } from './db/db.module';
+import { User } from './auth/entities/user.entity';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { DBModule } from './db/db.module';
       load: [configuration],
       isGlobal: true,
     }),
-    DBModule.forRoot({ entities: [] }),
+    DBModule.forRoot({ entities: [User] }),
     AuthModule,
   ],
   controllers: [AppController],
