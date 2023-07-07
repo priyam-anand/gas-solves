@@ -3,13 +3,12 @@ import { CHALLENGE_PREFIX, NONCE_SUB } from './auth.constants';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { LoginData } from './interface/login.interface';
-import { sha256, verifyMessage } from 'ethers';
+import { verifyMessage } from 'ethers';
 import { Logger, add } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
+import { UserRepoService } from 'src/repo/user-repo.service';
 @Injectable()
 export class AuthService {
   private nonceSecret: string;
@@ -22,8 +21,8 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly userRepoSerivce: UserRepoService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-    @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {
     const nonceDetails = this.configService.get('NONCE');
     const accessTokenDetails = this.configService.get('ACCESS_TOKEN');
@@ -47,45 +46,48 @@ export class AuthService {
     try {
       this.logger.info(`Loggin in [address : ${address}]`);
 
-      // get the tokens
       const tokens = this.getAccountTokens(address);
+      const user = (await this.userRepoSerivce.findOrCreate(address)) as User;
 
-      // save refresh token to user table
-      this.logger.info(
-        `Finding user in DB and create a user if it does not exist [address : ${address}]`,
-      );
+      const tokenHash = this.hashToken(tokens.refresh_token);
 
-      // if user does not exist, create a save
-      const user = await this.userRepo.findOne({ where: { address } });
-      const tokenHash = crypto
-        .createHash('sha256')
-        .update(tokens.refresh_token)
-        .digest('hex');
+      await this.userRepoSerivce.updateAccount(address, {
+        refreshTokenHash: tokenHash,
+      });
 
-      if (!user) {
-        this.logger.info(`Creating new user [address : ${address}]`);
-        await this.userRepo.save({
-          address: address,
-          refreshTokenHash: tokenHash,
-        });
-
-        return tokens;
-      }
-
-      // if user exist, update the token
-      this.logger.info(
-        `Updating user with new refresh token [address : ${address}]`,
-      );
-      await this.userRepo.update(
-        { address: address },
-        { refreshTokenHash: tokenHash },
-      );
-
-      // return the token
       return tokens;
     } catch (error) {
       this.logger.error(
         `Error in logging in [address : ${address}] : ${error.stack}`,
+      );
+      return { access_token: null, refresh_token: null };
+    }
+  }
+
+  async refreshToken(address: string, refreshToken: string) {
+    try {
+      this.logger.info(`Creating new refresh token [address : ${address}]`);
+
+      // check if previous refresh token matches the stored one
+      const tokenHash = this.hashToken(refreshToken);
+      const user = (await this.userRepoSerivce.findOrCreate(address)) as User;
+
+      if (user.refreshTokenHash !== tokenHash) {
+        this.logger.error(`Invalid refresh token [address : ${address}]`);
+        return { access_token: null, refresh_token: null };
+      }
+
+      // create new tokens and save refresh token to db
+      const newTokens = this.getAccountTokens(address);
+      const newTokenHash = this.hashToken(newTokens.refresh_token);
+      await this.userRepoSerivce.updateAccount(address, {
+        refreshTokenHash: newTokenHash,
+      });
+
+      return newTokens;
+    } catch (error) {
+      this.logger.error(
+        `Error in creating new refresh token [address : ${address}]`,
       );
       return { access_token: null, refresh_token: null };
     }
@@ -158,7 +160,9 @@ export class AuthService {
     };
   }
 
-  // NONCE FUNCTIONS
+  hashToken(token: string) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
 
   verifyNonce(nonce: string) {
     const payload = this.jwtService.verify(nonce, {

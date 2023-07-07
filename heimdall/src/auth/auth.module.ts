@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { AuthConroller } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { RepoModule } from 'src/repo/repo.module';
 
 @Module({
-  imports: [JwtModule.register({}), TypeOrmModule.forFeature([User])],
+  imports: [JwtModule.register({}), RepoModule],
   controllers: [AuthConroller],
   providers: [AuthService],
 })
