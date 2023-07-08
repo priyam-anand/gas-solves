@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Headers,
+  InternalServerErrorException,
   Post,
   Req,
   UnauthorizedException,
@@ -18,15 +19,21 @@ export class AuthConroller {
   constructor(private readonly authService: AuthService) {}
 
   @Get('challenge')
-  async generageChallenge(): Promise<String> {
-    return this.authService.generateChallenge();
+  async generageChallenge(): Promise<{ data: string }> {
+    try {
+      return this.authService.generateChallenge();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Could not generate challenge string',
+      );
+    }
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() loginData: LoginDto) {
     if (!this.authService.validateLoginData(loginData)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Login details not valid');
     }
     return this.authService.login(loginData.address);
   }

@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CHALLENGE_PREFIX, NONCE_SUB } from './auth.constants';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { LoginData } from './interface/login.interface';
 import { verifyMessage } from 'ethers';
-import { Logger, add } from 'winston';
+import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { User } from './entities/user.entity';
 import * as crypto from 'crypto';
 import { UserRepoService } from 'src/repo/user-repo.service';
+import { AuthException } from './errors/auth.error';
 @Injectable()
 export class AuthService {
   private nonceSecret: string;
@@ -36,10 +36,10 @@ export class AuthService {
     this.nonceExpiresIn = nonceDetails.EXPIRES_IN;
   }
 
-  generateChallenge(): string {
+  generateChallenge(): { data: string } {
     const nonce = this.generateNonce();
     this.logger.info(`Creating new challenge string [Nonce : ${nonce}]`);
-    return CHALLENGE_PREFIX + nonce;
+    return { data: CHALLENGE_PREFIX + nonce };
   }
 
   async login(address: string) {
@@ -47,20 +47,20 @@ export class AuthService {
       this.logger.info(`Loggin in [address : ${address}]`);
 
       const tokens = this.getAccountTokens(address);
-      const user = (await this.userRepoSerivce.findOrCreate(address)) as User;
+      await this.userRepoSerivce.findOrCreate(address);
 
       const tokenHash = this.hashToken(tokens.refresh_token);
 
-      await this.userRepoSerivce.updateAccount(address, {
+      await this.userRepoSerivce.updateUser(address, {
         refreshTokenHash: tokenHash,
       });
 
-      return tokens;
+      return { data: tokens };
     } catch (error) {
       this.logger.error(
         `Error in logging in [address : ${address}] : ${error.stack}`,
       );
-      return { access_token: null, refresh_token: null };
+      throw new AuthException(`Could not login user: ${error}`);
     }
   }
 
@@ -70,26 +70,29 @@ export class AuthService {
 
       // check if previous refresh token matches the stored one
       const tokenHash = this.hashToken(refreshToken);
-      const user = (await this.userRepoSerivce.findOrCreate(address)) as User;
+      const user = await this.userRepoSerivce.findOrCreate(address);
 
       if (user.refreshTokenHash !== tokenHash) {
         this.logger.error(`Invalid refresh token [address : ${address}]`);
-        return { access_token: null, refresh_token: null };
+        throw new AuthException(
+          'Could not validate refresh token',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       // create new tokens and save refresh token to db
       const newTokens = this.getAccountTokens(address);
       const newTokenHash = this.hashToken(newTokens.refresh_token);
-      await this.userRepoSerivce.updateAccount(address, {
+      await this.userRepoSerivce.updateUser(address, {
         refreshTokenHash: newTokenHash,
       });
 
-      return newTokens;
+      return { data: newTokens };
     } catch (error) {
       this.logger.error(
         `Error in creating new refresh token [address : ${address}]`,
       );
-      return { access_token: null, refresh_token: null };
+      throw new AuthException(`Could not create new tokens: ${error}`);
     }
   }
 
