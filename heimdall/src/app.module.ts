@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { DBModule } from './db/db.module';
 import { User } from './auth/entities/user.entity';
+import { HealthCheckModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { User } from './auth/entities/user.entity';
     }),
     DBModule.forRoot({ entities: [User] }),
     AuthModule,
+    HealthCheckModule,
   ],
   controllers: [AppController],
   providers: [AppService],
