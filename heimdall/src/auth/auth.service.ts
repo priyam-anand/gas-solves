@@ -7,7 +7,7 @@ import { verifyMessage } from 'ethers';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as crypto from 'crypto';
-import { UserRepoService } from 'src/repo/user-repo.service';
+import { UserRepoService } from '../repo/user-repo.service';
 import { AuthException } from './errors/auth.error';
 @Injectable()
 export class AuthService {
@@ -27,7 +27,6 @@ export class AuthService {
     const nonceDetails = this.configService.get('NONCE');
     const accessTokenDetails = this.configService.get('ACCESS_TOKEN');
     const refreshTokenDetails = this.configService.get('REFRESH_TOKEN');
-
     this.accessTokenSecret = accessTokenDetails.SECRET;
     this.accessTokenExpiresIn = accessTokenDetails.EXPIRES_IN;
     this.refreshTokenSecret = refreshTokenDetails.SECRET;
