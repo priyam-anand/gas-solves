@@ -5,7 +5,7 @@ import { User } from '../auth/entities/user.entity';
 import { DbException } from '../db/errors/db.error';
 import { Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { Logger, add } from 'winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class UserRepoService {

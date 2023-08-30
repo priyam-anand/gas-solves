@@ -5,7 +5,7 @@ import { DBConfig } from './db.config';
 @Module({})
 export class DBModule {
   public static getConnectionOptions(dbConfig: DBConfig): TypeOrmModuleOptions {
-    var connectionOptions: TypeOrmModuleOptions =
+    let connectionOptions: TypeOrmModuleOptions =
       DBModule.getConnectionOptionsPostgres();
 
     connectionOptions = {
