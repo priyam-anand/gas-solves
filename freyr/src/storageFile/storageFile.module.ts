@@ -6,5 +6,6 @@ import { RepoModule } from 'src/repo/repo.module';
   providers: [StorageFileSerivce],
   imports: [RepoModule],
   exports: [StorageFileSerivce],
+  controllers: [],
 })
 export class StorageFileModule {}
