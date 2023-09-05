@@ -9,7 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { DBModule } from './db/db.module';
 import { HealthCheckModule } from './health/health.module';
-import { User } from './repo/entities/user.entity';
 
 @Module({
   imports: [
