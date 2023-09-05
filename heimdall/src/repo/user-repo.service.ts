@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { User } from '../auth/entities/user.entity';
 import { DbException } from '../db/errors/db.error';
 import { Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { Logger } from 'winston';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserRepoService {

@@ -8,7 +8,6 @@ import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { DBModule } from './db/db.module';
-import { User } from './auth/entities/user.entity';
 import { HealthCheckModule } from './health/health.module';
 
 @Module({
@@ -36,7 +35,9 @@ import { HealthCheckModule } from './health/health.module';
       load: [configuration],
       isGlobal: true,
     }),
-    DBModule.forRoot({ entities: [User] }),
+    DBModule.forRoot({
+      entities: [__dirname + '/repo/entities/*.entity.{.ts,.js}'],
+    }),
     AuthModule,
     HealthCheckModule,
   ],
