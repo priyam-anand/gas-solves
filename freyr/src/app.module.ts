@@ -12,6 +12,7 @@ import { Question } from './repo/entities/question.entity';
 import { StorageFile } from './repo/entities/storageFile.entity';
 import { Submission } from './repo/entities/submission.entity';
 import { User } from './repo/entities/user.entity';
+import { ContestModule } from './contest/contest.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { User } from './repo/entities/user.entity';
     }),
     RepoModule,
     StorageFileModule,
+    ContestModule,
   ],
   controllers: [],
   providers: [],
