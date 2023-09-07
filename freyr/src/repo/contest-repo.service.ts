@@ -1,11 +1,16 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { EntityManager, Repository } from 'typeorm';
+import {
+  EntityManager,
+  FindManyOptions,
+  FindOneOptions,
+  Repository,
+} from 'typeorm';
 import { Contest } from './entities/contest.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { CreateContestDto } from 'src/contest/dto/CreateContest.dto';
-import { DbException } from 'src/db/errors/db.error';
+import { GenericError } from '../common/errors/generic.error';
 import { Question } from './entities/question.entity';
 
 @Injectable()
@@ -22,7 +27,7 @@ export class ContestRepoService {
   async createContest(contestData: CreateContestDto) {
     return new Promise(async (resolve, reject) => {
       try {
-        var createdContestId = -1;
+        let createdContestId = -1;
         this.logger.info(`Saving contest data to record`);
 
         await this.entitymanager.transaction(async (manager: EntityManager) => {
@@ -58,13 +63,61 @@ export class ContestRepoService {
         resolve(createdContestId);
       } catch (error) {
         this.logger.error(
-          `Error in creating contest record : [contest data : ${JSON.stringify(
+          `Error in creating contest record [contest data : ${JSON.stringify(
             contestData,
           )}] : ${error.stack}`,
         );
         reject(
-          new DbException(
+          new GenericError(
             'Could not save record to DB ',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      }
+    });
+  }
+
+  async getContest(options: FindOneOptions<Contest>) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.logger.info(
+          `Finding contest record [condition : ${JSON.stringify(options)}]`,
+        );
+        const result = await this.contestRepo.findOne(options);
+        resolve(result);
+      } catch (error) {
+        this.logger.error(
+          `Error in finding contest record [condition : ${JSON.stringify(
+            options,
+          )}] : ${error.stack}`,
+        );
+        reject(
+          new GenericError(
+            'Could not fetch record from DB',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      }
+    });
+  }
+
+  async getContests(options: FindManyOptions<Contest>) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.logger.info(
+          `Finding contests records [condition : ${JSON.stringify(options)}]`,
+        );
+        const result = await this.contestRepo.findAndCount(options);
+        resolve(result);
+      } catch (error) {
+        this.logger.error(
+          `Error in finding contest records [condition : ${JSON.stringify(
+            options,
+          )}] : ${error.stack}`,
+        );
+        reject(
+          new GenericError(
+            'Could not fetch record from DB',
             HttpStatus.INTERNAL_SERVER_ERROR,
           ),
         );

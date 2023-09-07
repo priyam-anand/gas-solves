@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Question } from './question.entity';
-import { Type } from 'class-transformer';
 
 @Entity()
 export class Contest extends BaseEntity {

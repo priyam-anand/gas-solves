@@ -1,6 +1,6 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class ContestApiException extends Error {
+export class GenericError extends Error {
   public status: HttpStatus;
   constructor(message: string, status: HttpStatus) {
     super(message);

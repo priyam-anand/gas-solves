@@ -28,7 +28,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
   async updload(
     key: string,
     fileData: Buffer,
-    fileName: string = '',
+    fileName = '',
     contentType: any = undefined,
   ) {
     return new Promise(async (resolve, reject) => {
