@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UsePipes,
@@ -12,6 +13,7 @@ import {
 import { ContestService } from './contest.service';
 import { CreateContestDto } from './dto/CreateContest.dto';
 import { UserAddress } from 'src/common/decorators/user-address.decorator';
+import { UpdateContestDto } from './dto/UpdateContest.dto';
 
 @Controller('contest')
 export class ContestController {
@@ -22,6 +24,11 @@ export class ContestController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async createContest(@Body() contestData: CreateContestDto) {
     return await this.contestService.createContest(contestData);
+  }
+
+  @Patch('update')
+  async updateContest(@Body() contestData: UpdateContestDto) {
+    return await this.contestService.updateContest(contestData);
   }
 
   @Get()
@@ -39,4 +46,6 @@ export class ContestController {
   ) {
     return await this.contestService.getContest(contestId, address);
   }
+
+  // TODO : GET leaderboard
 }

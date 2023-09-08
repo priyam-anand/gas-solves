@@ -6,6 +6,8 @@ import { GenericError } from '../common/errors/generic.error';
 import { ContestRepoService } from 'src/repo/contest-repo.service';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import { Contest } from 'src/repo/entities/contest.entity';
+import { UpdateContestDto } from './dto/UpdateContest.dto';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class ContestService {
@@ -61,6 +63,56 @@ export class ContestService {
       throw new HttpException(
         {
           error: 'Error in creating new contest',
+          reason: error.message,
+        },
+        error.status,
+      );
+    }
+  }
+
+  async updateContest(contestData: UpdateContestDto) {
+    try {
+      this.logger.info(
+        `Updating contest [contestData : ${JSON.stringify(contestData)}]`,
+      );
+
+      const result = <Contest>await this.contestRepoService.getContest({
+        where: { id: contestData.id },
+      });
+
+      if (!result) {
+        throw new GenericError(
+          `Contest with id ${contestData.id} does not exist`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const partialentity: QueryDeepPartialEntity<Contest> = {};
+
+      partialentity.name = contestData.name ? contestData.name : result.name;
+      partialentity.startTime = contestData.startTime
+        ? contestData.startTime
+        : result.startTime;
+      partialentity.endTime = contestData.endTime
+        ? contestData.endTime
+        : result.endTime;
+
+      const newResult = await this.contestRepoService.updateContest(
+        contestData.id,
+        partialentity,
+        contestData.questions,
+      );
+
+      return newResult;
+    } catch (error) {
+      this.logger.error(
+        `Error in updating contest [contestData : ${JSON.stringify(
+          contestData,
+        )}]`,
+      );
+      throw new HttpException(
+        {
+          error: 'Error in updating contest',
           reason: error.message,
         },
         error.status,

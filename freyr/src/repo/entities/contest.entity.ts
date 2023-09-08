@@ -21,6 +21,9 @@ export class Contest extends BaseEntity {
   @Column()
   endTime: Date;
 
-  @OneToMany(() => Question, (question) => question.contest, { cascade: true })
+  @OneToMany(() => Question, (question) => question.contest, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   questions: Question[];
 }
