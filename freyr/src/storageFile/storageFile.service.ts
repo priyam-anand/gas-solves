@@ -28,8 +28,8 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
   async updload(
     key: string,
     fileData: Buffer,
-    fileName: string = '',
-    contentType: any,
+    fileName = '',
+    contentType: any = undefined,
   ) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -61,7 +61,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         this.logger.error(
           `Error in uploading file to S3 from buffer [bucket: ${this.bucket}, key: ${key}]`,
         );
-        reject();
+        reject(error);
       }
     });
   }
@@ -75,11 +75,12 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
 
         const s3 = new S3();
         await s3.deleteObject({ Bucket: this.bucket, Key: key }).promise();
+        resolve(true);
       } catch (error) {
         this.logger.error(
           `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
         );
-        reject();
+        reject(error);
       }
     });
   }
@@ -101,7 +102,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         this.logger.error(
           `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
         );
-        reject();
+        reject(error);
       }
     });
   }
@@ -109,10 +110,11 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
   async getPublicUrl(key: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        return await this.storageFileRepoService.getPublicUrl(key);
+        const result = await this.storageFileRepoService.getPublicUrl(key);
+        resolve(result);
       } catch (error) {
         this.logger.error(`Error in getting public URI [key: ${key}]`);
-        reject();
+        reject(error);
       }
     });
   }

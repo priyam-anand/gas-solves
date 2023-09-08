@@ -42,7 +42,7 @@ export class StorageFileRepoService {
         this.logger.error(
           `Error in creating S3 file record [key : ${key}, url : ${public_url}]`,
         );
-        reject();
+        reject(error);
       }
     });
   }
@@ -61,7 +61,7 @@ export class StorageFileRepoService {
         }
       } catch (error) {
         this.logger.error(`Error in getting public url : [key : ${key}]`);
-        reject();
+        reject(error);
       }
     });
   }

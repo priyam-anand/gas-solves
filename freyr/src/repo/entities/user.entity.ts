@@ -24,6 +24,6 @@ export class User extends BaseEntity {
   @Column()
   refreshTokenHash?: string;
 
-  @OneToMany(() => Submission, (submission) => submission.id)
+  @OneToMany(() => Submission, (submission) => submission.user)
   submissions: Submission[];
 }

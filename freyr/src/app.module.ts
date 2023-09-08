@@ -7,6 +7,12 @@ import configuration from 'config/configuration';
 import { DBModule } from './db/db.module';
 import { RepoModule } from './repo/repo.module';
 import { StorageFileModule } from './storageFile/storageFile.module';
+import { Contest } from './repo/entities/contest.entity';
+import { Question } from './repo/entities/question.entity';
+import { StorageFile } from './repo/entities/storageFile.entity';
+import { Submission } from './repo/entities/submission.entity';
+import { User } from './repo/entities/user.entity';
+import { ContestModule } from './contest/contest.module';
 
 @Module({
   imports: [
@@ -34,10 +40,11 @@ import { StorageFileModule } from './storageFile/storageFile.module';
       isGlobal: true,
     }),
     DBModule.forRoot({
-      entities: [__dirname + '/repo/entities/*.entity.{.ts,.js}'],
+      entities: [Contest, Question, StorageFile, Submission, User],
     }),
     RepoModule,
     StorageFileModule,
+    ContestModule,
   ],
   controllers: [],
   providers: [],

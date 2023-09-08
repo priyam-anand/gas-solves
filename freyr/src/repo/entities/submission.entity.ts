@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -28,9 +29,11 @@ export class Submission extends BaseEntity {
   @Column()
   code_file: string;
 
-  @ManyToOne(() => Question)
+  @ManyToOne(() => Question, (question) => question.submissions)
+  @JoinColumn({ name: 'question_id' })
   question: Question;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.submissions)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
