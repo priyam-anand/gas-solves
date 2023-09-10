@@ -1,9 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, FindOneOptions, Repository } from 'typeorm';
 import { StorageFile } from './entities/storageFile.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { GenericError } from 'src/common/errors/generic.error';
 
 @Injectable()
 export class StorageFileRepoService {
@@ -40,9 +41,54 @@ export class StorageFileRepoService {
         resolve(createdFile);
       } catch (error) {
         this.logger.error(
-          `Error in creating S3 file record [key : ${key}, url : ${public_url}]`,
+          `Error in creating S3 file record [key : ${key}, url : ${public_url}] : ${error.stack}`,
         );
-        reject(error);
+        reject(
+          new GenericError(
+            'Could not create S3 storage record',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      }
+    });
+  }
+
+  async getStorageFile(options: FindOneOptions<StorageFile>) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.storageFileRepo.findOne(options);
+        resolve(result);
+      } catch (error) {
+        this.logger.error(
+          `Error in fetching S3 file record [options : ${JSON.stringify(
+            options,
+          )}] : ${error.stack}`,
+        );
+        reject(
+          new GenericError(
+            'Could not fetch S3 file storage record',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      }
+    });
+  }
+
+  async deleteStorageFile(key: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.storageFileRepo.delete(key);
+        resolve(result);
+      } catch (error) {
+        this.logger.error(
+          `Error in deleting S3 file record [options : ${key}] : ${error.stack}`,
+        );
+        reject(
+          new GenericError(
+            'Could not fetch S3 file storage record',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }
@@ -60,8 +106,15 @@ export class StorageFileRepoService {
           resolve(null);
         }
       } catch (error) {
-        this.logger.error(`Error in getting public url : [key : ${key}]`);
-        reject(error);
+        this.logger.error(
+          `Error in getting public url : [key : ${key}] : ${error.stack}`,
+        );
+        reject(
+          new GenericError(
+            'Could not fetch public url',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }

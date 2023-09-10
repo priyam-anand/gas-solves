@@ -1,7 +1,13 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3, config } from 'aws-sdk';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { GenericError } from 'src/common/errors/generic.error';
 import { StorageFile } from 'src/repo/entities/storageFile.entity';
 import { StorageFileRepoService } from 'src/repo/storage-file-repo.service';
 import { Logger } from 'winston';
@@ -61,7 +67,12 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         this.logger.error(
           `Error in uploading file to S3 from buffer [bucket: ${this.bucket}, key: ${key}]`,
         );
-        reject(error);
+        reject(
+          new GenericError(
+            'Could not upload file to S3',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }
@@ -80,7 +91,12 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         this.logger.error(
           `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
         );
-        reject(error);
+        reject(
+          new GenericError(
+            'Could not delete file from S3',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }
@@ -102,7 +118,12 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         this.logger.error(
           `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
         );
-        reject(error);
+        reject(
+          new GenericError(
+            'Could not fetch file fetch S3',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }
@@ -114,7 +135,12 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         resolve(result);
       } catch (error) {
         this.logger.error(`Error in getting public URI [key: ${key}]`);
-        reject(error);
+        reject(
+          new GenericError(
+            'Could not fetch public URI of file',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
       }
     });
   }
