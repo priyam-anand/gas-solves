@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import {
   EntityManager,
   FindManyOptions,
@@ -17,6 +17,7 @@ import {
 import { GenericError } from '../common/errors/generic.error';
 import { Question } from './entities/question.entity';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { QuestionRepoService } from './question-repo.service';
 
 @Injectable()
 export class ContestRepoService {
@@ -25,6 +26,8 @@ export class ContestRepoService {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     @InjectEntityManager() private entitymanager: EntityManager,
+    @Inject(forwardRef(() => QuestionRepoService))
+    private questionRepoService: QuestionRepoService,
   ) {
     this.contestRepo = entitymanager.getRepository(Contest);
   }
@@ -44,17 +47,10 @@ export class ContestRepoService {
           newContest.questions = [];
 
           for (const question of contestData.questions) {
-            const newQuestion = new Question();
-            newQuestion.name = question.name;
-            newQuestion.problem_statement = question.problemStatement;
-            newQuestion.pointes = question.points;
-            newQuestion.submissions = [];
-
-            const createdQuestion = await manager
-              .getRepository(Question)
-              .save(newQuestion);
-
-            newContest.questions.push(createdQuestion);
+            const newQuestion = <Question>(
+              await this.questionRepoService.createQuestion(question)
+            );
+            newContest.questions.push(newQuestion);
           }
 
           const createdContest = await manager
@@ -98,17 +94,10 @@ export class ContestRepoService {
             );
             partialQuery.questions = [];
             for (const question of questions) {
-              const newQuestion = new Question();
-              newQuestion.name = question.name;
-              newQuestion.problem_statement = question.problemStatement;
-              newQuestion.pointes = question.points;
-              newQuestion.submissions = [];
-
-              const createdQuestion = await manager
-                .getRepository(Question)
-                .save(newQuestion);
-
-              partialQuery.questions.push(createdQuestion);
+              const newQuestion = <Question>(
+                await this.questionRepoService.createQuestion(question)
+              );
+              partialQuery.questions.push(newQuestion);
             }
           }
 
@@ -120,7 +109,7 @@ export class ContestRepoService {
         });
       } catch (error) {
         this.logger.error(
-          `Error in updating contest record [contest data : ${JSON.stringify(
+          `Error in updating contest record [contestId : ${id}, contest data : ${JSON.stringify(
             partialQuery,
           )}] : ${error.stack}`,
         );

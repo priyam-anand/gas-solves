@@ -26,7 +26,9 @@ export class ContestController {
     return await this.contestService.createContest(contestData);
   }
 
+  // admin only api, add auth guard with admin's api key
   @Patch('update')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async updateContest(@Body() contestData: UpdateContestDto) {
     return await this.contestService.updateContest(contestData);
   }
