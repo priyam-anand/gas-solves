@@ -6,13 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from 'config/configuration';
 import { DBModule } from './db/db.module';
 import { RepoModule } from './repo/repo.module';
-import { StorageFileModule } from './storageFile/storageFile.module';
 import { Contest } from './repo/entities/contest.entity';
 import { Question } from './repo/entities/question.entity';
 import { StorageFile } from './repo/entities/storageFile.entity';
 import { Submission } from './repo/entities/submission.entity';
 import { User } from './repo/entities/user.entity';
 import { ContestModule } from './contest/contest.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -43,8 +43,8 @@ import { ContestModule } from './contest/contest.module';
       entities: [Contest, Question, StorageFile, Submission, User],
     }),
     RepoModule,
-    StorageFileModule,
     ContestModule,
+    QuestionModule,
   ],
   controllers: [],
   providers: [],
