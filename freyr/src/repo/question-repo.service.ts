@@ -17,6 +17,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { StorageFileRepoService } from './storage-file-repo.service';
 import { StorageFile } from './entities/storageFile.entity';
 import { StorageFileSerivce } from 'src/storageFile/storageFile.service';
+import { createFileKey } from 'src/common/utils/keys';
 
 @Injectable()
 export class QuestionRepoService {
@@ -222,7 +223,7 @@ export class QuestionRepoService {
           // upload
           const storageFile = <StorageFile>(
             await this.storageFileService.updload(
-              this.getStorageFileKey(),
+              createFileKey({ time: Date.now() }),
               file.buffer,
             )
           );
@@ -245,9 +246,5 @@ export class QuestionRepoService {
         );
       }
     });
-  }
-
-  getStorageFileKey() {
-    return 'storageFile_' + Date.now();
   }
 }
