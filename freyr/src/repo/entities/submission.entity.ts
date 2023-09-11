@@ -13,6 +13,7 @@ enum Verdict {
   PROCESSING,
   SUCCESS,
   FAILED,
+  INVALID,
 }
 
 @Entity()

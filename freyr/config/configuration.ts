@@ -6,6 +6,8 @@ export default () => {
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DB: process.env.POSTGRES_DB,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
     PORT: parseInt(process.env.PORT) || 3000,
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
