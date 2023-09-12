@@ -9,6 +9,7 @@ import { QuestionRepoService } from './question-repo.service';
 import { StorageFileModule } from 'src/storageFile/storageFile.module';
 import { Submission } from './entities/submission.entity';
 import { SubmissionRepoService } from './submission-repo.service';
+import { UserRepoService } from './user-repo.service';
 
 @Module({
   imports: [
@@ -20,12 +21,14 @@ import { SubmissionRepoService } from './submission-repo.service';
     ContestRepoService,
     QuestionRepoService,
     SubmissionRepoService,
+    UserRepoService,
   ],
   exports: [
     StorageFileRepoService,
     ContestRepoService,
     QuestionRepoService,
     SubmissionRepoService,
+    UserRepoService,
   ],
 })
 export class RepoModule {}

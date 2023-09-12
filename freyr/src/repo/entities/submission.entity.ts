@@ -9,7 +9,7 @@ import {
 import { Question } from './question.entity';
 import { User } from './user.entity';
 
-enum Verdict {
+export enum Verdict {
   PROCESSING,
   SUCCESS,
   FAILED,
@@ -21,11 +21,11 @@ export class Submission extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column()
+  @Column({ default: Verdict.PROCESSING })
   verdict: Verdict;
 
-  @Column()
-  gas_used?: number;
+  @Column({ nullable: true })
+  gas_used: number;
 
   @Column()
   code_file: string;
