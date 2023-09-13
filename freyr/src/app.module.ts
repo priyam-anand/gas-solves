@@ -15,6 +15,7 @@ import { ContestModule } from './contest/contest.module';
 import { QuestionModule } from './question/question.module';
 import { SubmissionModule } from './submission/submission.module';
 import { QueueModule } from './queue/queue.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { QueueModule } from './queue/queue.module';
     ContestModule,
     QuestionModule,
     SubmissionModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
