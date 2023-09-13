@@ -13,6 +13,9 @@ import { Submission } from './repo/entities/submission.entity';
 import { User } from './repo/entities/user.entity';
 import { ContestModule } from './contest/contest.module';
 import { QuestionModule } from './question/question.module';
+import { SubmissionModule } from './submission/submission.module';
+import { QueueModule } from './queue/queue.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -42,9 +45,12 @@ import { QuestionModule } from './question/question.module';
     DBModule.forRoot({
       entities: [Contest, Question, StorageFile, Submission, User],
     }),
+    QueueModule.forRoot(),
     RepoModule,
     ContestModule,
     QuestionModule,
+    SubmissionModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
