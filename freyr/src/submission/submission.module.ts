@@ -5,6 +5,8 @@ import { RepoModule } from 'src/repo/repo.module';
 import { BullModule } from '@nestjs/bull';
 import { SUBMISSION_QUEUE } from 'src/common/utils/constants';
 import { StorageFileModule } from 'src/storageFile/storageFile.module';
+import { AccessJwtAuthGuard } from 'src/common/guards/access-jwt-auth.guard';
+import { AccessJwtStrategy } from 'src/common/guards/access-jwt-auth.strategy';
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { StorageFileModule } from 'src/storageFile/storageFile.module';
     BullModule.registerQueue({ name: SUBMISSION_QUEUE }),
     StorageFileModule,
   ],
-  providers: [SubmissionService],
+  providers: [SubmissionService, AccessJwtAuthGuard, AccessJwtStrategy],
   controllers: [SubmissionController],
 })
 export class SubmissionModule {}
