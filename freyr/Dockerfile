@@ -1,4 +1,4 @@
-#build stage
+#build
 FROM node:16-alpine AS build
 
 WORKDIR /usr/src/app
@@ -11,15 +11,14 @@ COPY . .
 
 RUN npm run build
 
-
-#production stage
-FROM node:16-alpine 
+#prod from build
+FROM node:16-alpine
 
 WORKDIR /usr/src/app
 
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build ./usr/src/app/dist ./dist
 
-COPY --from=build usr/src/app/package*.json ./
+COPY --from=build ./usr/src/app/package*.json ./
 
 COPY --from=build usr/src/app/env/.env.prod ./env/
 
@@ -29,4 +28,4 @@ RUN rm package-lock.json
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start:prod" ]
+CMD ["npm", "run", "start:prod"]
