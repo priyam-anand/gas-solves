@@ -26,7 +26,9 @@ export class UserService {
 
       return user;
     } catch (error) {
-      this.logger.error(`Error in fetching user [address : ${userAddress}]`);
+      this.logger.error(
+        `Error in fetching user [address : ${userAddress}] : ${error.stack}`,
+      );
       throw new HttpException(
         { error: 'Error in fetching user', reason: error.message },
         error.status,
@@ -42,7 +44,6 @@ export class UserService {
       );
 
       if (body.name) user.name = body.name;
-
       if (file) {
         const storageFile = <StorageFile>(
           await this.storageFileService.updload(
@@ -58,7 +59,7 @@ export class UserService {
       this.logger.error(
         `Error in updating user [address : ${userAddress}, user : ${JSON.stringify(
           body,
-        )}, file : ${file ? true : false}]`,
+        )}, file : ${file ? true : false}] : ${error.stack}`,
       );
       throw new HttpException(
         { error: 'Error in updating user', reason: error.message },
@@ -77,7 +78,6 @@ export class UserService {
           );
         }
         address = address.toLowerCase();
-
         const user = <User>await this.userRepoService.getUser({
           where: { address: address },
         });

@@ -39,7 +39,9 @@ export class SubmissionService {
 
       return result;
     } catch (error) {
-      this.logger.error(`Error in getting submission [id : ${id}]`);
+      this.logger.error(
+        `Error in getting submission [id : ${id}] : ${error.stack}`,
+      );
       throw new HttpException(
         {
           error: 'Could not fetch submission',
@@ -102,7 +104,7 @@ export class SubmissionService {
       return { submissionId: submissionId, jobId: job.id };
     } catch (error) {
       this.logger.error(
-        `Error in make submission [questionId : ${questionId}]`,
+        `Error in make submission [questionId : ${questionId}] : ${error.stack}`,
       );
       throw new HttpException(
         { error: 'Could not make submission', reason: error.message },

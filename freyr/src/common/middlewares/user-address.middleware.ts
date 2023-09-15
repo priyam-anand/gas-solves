@@ -12,13 +12,13 @@ export class UserAddressMiddleware implements NestMiddleware {
   ) {}
 
   async use(req, res: Response, next: NextFunction) {
-    const authHeader = req.header('authorization');
+    const authHeader = req.header('Authorization');
     if (!authHeader) {
       next();
     } else {
       const token = authHeader.substring('Bearer '.length);
       const payload = this.jwtService.verify(token, {
-        ignoreExpiration: false,
+        ignoreExpiration: true,
         secret: this.configService.get('ACCESS_TOKEN_SECRET'),
       });
 

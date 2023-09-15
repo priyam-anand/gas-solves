@@ -58,7 +58,7 @@ export class ContestService {
       this.logger.error(
         `Error in creating new contest [contest data : ${JSON.stringify(
           contestData,
-        )}]`,
+        )}] : ${error.stack}`,
       );
       throw new HttpException(
         {
@@ -108,7 +108,7 @@ export class ContestService {
       this.logger.error(
         `Error in updating contest [contestData : ${JSON.stringify(
           contestData,
-        )}]`,
+        )}] : ${error.stack}`,
       );
       throw new HttpException(
         {
@@ -144,15 +144,17 @@ export class ContestService {
 
       if (address) {
         result.questions.forEach((question) => {
-          question.submissions = question.submissions.filter((sub) => {
-            if (sub.user.address?.toLowerCase() === address) return sub;
+          question.submissions = question.submissions?.filter((sub) => {
+            if (sub.user?.address?.toLowerCase() === address) return sub;
           });
         });
       }
 
       return result;
     } catch (error) {
-      this.logger.error(`Error in getting contest [contestId : ${contestId}]`);
+      this.logger.error(
+        `Error in getting contest [contestId : ${contestId}] : ${error.stack}`,
+      );
       throw new HttpException(
         {
           error: `Error in getting contest with id ${contestId}`,
@@ -186,7 +188,7 @@ export class ContestService {
       // const result = await this.contestRepoService.getContests({});
     } catch (error) {
       this.logger.error(
-        `Error in getting contests [limit : ${limit}, offset : ${offset}]`,
+        `Error in getting contests [limit : ${limit}, offset : ${offset}] : ${error.stack}`,
       );
       throw new HttpException(
         {
