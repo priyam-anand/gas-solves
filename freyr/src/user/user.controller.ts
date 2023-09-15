@@ -5,11 +5,14 @@ import {
   Param,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AccessJwtAuthGuard } from 'src/common/guards/access-jwt-auth.guard';
+import { UserAddress } from 'src/common/decorators/user-address.decorator';
 
 @Controller('user')
 export class UserController {
@@ -20,12 +23,13 @@ export class UserController {
     return this.userService.getUser(address);
   }
 
-  @Post(':address')
+  @UseGuards(AccessJwtAuthGuard)
+  @Post('/update')
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(
-    @Param('address') address: string,
     @Body() body: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
+    @UserAddress() address: string,
   ) {
     return this.userService.updateProfile(address, body, file?.buffer);
   }

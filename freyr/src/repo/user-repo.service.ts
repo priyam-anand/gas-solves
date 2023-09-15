@@ -30,7 +30,7 @@ export class UserRepoService {
         this.logger.error(
           `Error in fetching user record [options : ${JSON.stringify(
             options,
-          )}]`,
+          )}] : ${error.stack}`,
         );
         reject(
           new GenericError(

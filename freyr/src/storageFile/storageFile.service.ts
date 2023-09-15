@@ -65,7 +65,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         resolve(createdFile);
       } catch (error) {
         this.logger.error(
-          `Error in uploading file to S3 from buffer [bucket: ${this.bucket}, key: ${key}]`,
+          `Error in uploading file to S3 from buffer [bucket: ${this.bucket}, key: ${key}] : ${error.stack}`,
         );
         reject(
           new GenericError(
@@ -89,7 +89,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         resolve(true);
       } catch (error) {
         this.logger.error(
-          `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
+          `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}] : ${error.stack}`,
         );
         reject(
           new GenericError(
@@ -116,7 +116,7 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         resolve(file);
       } catch (error) {
         this.logger.error(
-          `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}]`,
+          `Error in deleting file from S3 [bucket : ${this.bucket}, key: ${key}] : ${error.stack}`,
         );
         reject(
           new GenericError(
@@ -134,7 +134,9 @@ export class StorageFileSerivce implements OnApplicationBootstrap {
         const result = await this.storageFileRepoService.getPublicUrl(key);
         resolve(result);
       } catch (error) {
-        this.logger.error(`Error in getting public URI [key: ${key}]`);
+        this.logger.error(
+          `Error in getting public URI [key: ${key}] : ${error.stack}`,
+        );
         reject(
           new GenericError(
             'Could not fetch public URI of file',

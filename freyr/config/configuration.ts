@@ -1,5 +1,4 @@
 export default () => {
-  // console.log(process.env);
   return {
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_PORT: parseInt(process.env.POSTGRES_PORT),

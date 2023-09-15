@@ -20,6 +20,8 @@ export class QueueModule {
       redis: {
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
+        password: configService.get('REDIS_PASSWORD'),
+        username: configService.get('REDIS_USER'),
       },
     };
   }

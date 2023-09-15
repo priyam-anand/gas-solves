@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
@@ -16,6 +16,7 @@ import { QuestionModule } from './question/question.module';
 import { SubmissionModule } from './submission/submission.module';
 import { QueueModule } from './queue/queue.module';
 import { UserModule } from './user/user.module';
+import { LogsMiddleware } from './common/middlewares/logs.middleware';
 
 @Module({
   imports: [
@@ -30,11 +31,17 @@ import { UserModule } from './user/user.module';
         ),
       ),
       transports: [
-        new winston.transports.Console(),
+        new winston.transports.Console({
+          format: winston.format.colorize({ all: true }),
+        }),
         new winston.transports.File({
-          dirname: path.join(__dirname, './../log/error/'),
+          dirname: path.join('logs/'),
           filename: 'error.log',
           level: 'error',
+        }),
+        new winston.transports.File({
+          dirname: path.join('logs/'),
+          filename: 'combined.log',
         }),
       ],
     }),
@@ -55,4 +62,8 @@ import { UserModule } from './user/user.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}

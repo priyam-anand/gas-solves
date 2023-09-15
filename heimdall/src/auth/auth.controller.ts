@@ -34,7 +34,7 @@ export class AuthConroller {
     if (!this.authService.validateLoginData(loginData)) {
       throw new UnauthorizedException('Login details not valid');
     }
-    return this.authService.login(loginData.address);
+    return this.authService.login(loginData.address.toLowerCase());
   }
 
   @Post('refresh')
