@@ -15,13 +15,13 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 42 })
   address: string;
 
-  @Column()
-  name?: string;
+  @Column({ nullable: true })
+  name: string;
 
-  @Column()
+  @Column({ nullable: true })
   profile_picture?: string;
 
-  @Column()
+  @Column({ nullable: true })
   refreshTokenHash?: string;
 
   @OneToMany(() => Submission, (submission) => submission.user)

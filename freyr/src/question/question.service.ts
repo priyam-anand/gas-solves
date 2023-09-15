@@ -44,7 +44,7 @@ export class QuestionService {
       return result;
     } catch (error) {
       this.logger.error(
-        `Error in fetching question [questionId : ${questionId}, address : ${address}]`,
+        `Error in fetching question [questionId : ${questionId}, address : ${address}] : ${error.stack}`,
       );
       throw new HttpException(
         { error: 'Error in fetching question', reason: error.message },
@@ -87,7 +87,7 @@ export class QuestionService {
       this.logger.error(
         `Error in creating new question [questions data : ${JSON.stringify(
           questionData,
-        )}]`,
+        )}] : ${error.stack}`,
       );
       throw new HttpException(
         {
@@ -136,7 +136,7 @@ export class QuestionService {
       this.logger.error(
         `Error in updating question [question data : ${JSON.stringify(
           questionData,
-        )}]`,
+        )}] : ${error.stack}`,
       );
       throw new HttpException(
         { error: 'Error in updating question', reason: error.message },
@@ -164,7 +164,7 @@ export class QuestionService {
       return result;
     } catch (error) {
       this.logger.error(
-        `Error in deleting question [questionId : ${questionId}]`,
+        `Error in deleting question [questionId : ${questionId}] : ${error.stack}`,
       );
       throw new HttpException(
         { error: 'Error in deleting question', reason: error.message },
@@ -213,7 +213,7 @@ export class QuestionService {
       this.logger.error(
         `Error in uploading boilerplate code for questions [questionIds : ${JSON.stringify(
           questionIds,
-        )}]`,
+        )}] : ${error.stack}`,
       );
       throw new HttpException(
         {

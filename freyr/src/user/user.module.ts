@@ -1,12 +1,20 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { RepoModule } from 'src/repo/repo.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { StorageFileModule } from 'src/storageFile/storageFile.module';
+import { AccessJwtAuthGuard } from 'src/common/guards/access-jwt-auth.guard';
+import { AccessJwtStrategy } from 'src/common/guards/access-jwt-auth.strategy';
+import { UserAddressMiddleware } from 'src/common/middlewares/user-address.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [RepoModule, StorageFileModule],
+  imports: [JwtModule.register({}), RepoModule, StorageFileModule],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, AccessJwtAuthGuard, AccessJwtStrategy],
 })
-export class UserModule {}
+export class UserModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UserAddressMiddleware).forRoutes(UserController);
+  }
+}
