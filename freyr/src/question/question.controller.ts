@@ -18,8 +18,8 @@ import { CreateQuestionDto } from './dto/createQuetsion.dto';
 import { UserAddress } from 'src/common/decorators/user-address.decorator';
 import { UpdateQuestionDto } from './dto/updateQuestion.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadQuestionBoilerplateDto } from './dto/uploadQuestionBoilerplate.dto';
 import { AdminApiAuthGuard } from 'src/common/guards/admin-api-auth.guard';
+import { UploadQuestionFilesDto } from './dto/uploadQuestionFilesDto.dto';
 
 @Controller('question')
 export class QuestionController {
@@ -34,14 +34,25 @@ export class QuestionController {
   }
 
   @UseGuards(AdminApiAuthGuard)
-  @Post('upload')
+  @Post('upload-code')
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(FilesInterceptor('files'))
   async uploadQuestionBoilerplate(
-    @Body() body: UploadQuestionBoilerplateDto,
+    @Body() body: UploadQuestionFilesDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     return await this.questionService.uploadBoilerplateCode(body.ids, files);
+  }
+
+  @UseGuards(AdminApiAuthGuard)
+  @Post('upload-test')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadTestFile(
+    @Body() body: UploadQuestionFilesDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return await this.questionService.uploadTestFiles(body.ids, files);
   }
 
   @UseGuards(AdminApiAuthGuard)

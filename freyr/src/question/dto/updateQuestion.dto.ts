@@ -19,4 +19,9 @@ export class UpdateQuestionDto {
   @IsNotEmpty()
   @IsNumber()
   points: number;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  abi: string;
 }
