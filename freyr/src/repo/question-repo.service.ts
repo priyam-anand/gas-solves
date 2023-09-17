@@ -17,7 +17,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { StorageFileRepoService } from './storage-file-repo.service';
 import { StorageFile } from './entities/storageFile.entity';
 import { StorageFileSerivce } from 'src/storageFile/storageFile.service';
-import { createFileKey } from 'src/common/utils/keys';
+import { createFileKey, createTestKey } from 'src/common/utils/keys';
 
 @Injectable()
 export class QuestionRepoService {
@@ -112,6 +112,7 @@ export class QuestionRepoService {
         newQuestion.name = question.name;
         newQuestion.problem_statement = question.problemStatement;
         newQuestion.pointes = question.points;
+        newQuestion.abi = question.abi;
         newQuestion.submissions = [];
 
         const createdQuestion = await manager
@@ -229,6 +230,58 @@ export class QuestionRepoService {
           );
           // update
           question.boilerplate_code = storageFile.public_url;
+          result = <Question>await this.updateQuestion(questionId, question);
+        });
+        resolve(result);
+      } catch (error) {
+        this.logger.error(
+          `Error in uploading boilerplate code [quetionId : ${questionId}] : ${error.stack}`,
+        );
+        reject(
+          error.status
+            ? error
+            : new GenericError(
+                'Error in uploading boilerplate code',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              ),
+        );
+      }
+    });
+  }
+
+  async uploadTestCase(questionId: number, file: Express.Multer.File) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result: Question;
+        await this.entityManager.transaction(async (manager) => {
+          const question = await manager
+            .getRepository(Question)
+            .findOne({ where: { id: questionId } });
+
+          if (question.test_file) {
+            // delete storage file record
+            const storageFile = <StorageFile>(
+              await this.storageFileRepoService.getStorageFile({
+                where: { public_url: question.test_file },
+              })
+            );
+            await this.storageFileRepoService.deleteStorageFile(
+              storageFile.key,
+            );
+
+            // delete from s3
+            await this.storageFileService.delete(storageFile.key);
+          }
+
+          // upload
+          const storageFile = <StorageFile>(
+            await this.storageFileService.updload(
+              createTestKey({ time: Date.now() }),
+              file.buffer,
+            )
+          );
+          // update
+          question.test_file = storageFile.public_url;
           result = <Question>await this.updateQuestion(questionId, question);
         });
         resolve(result);

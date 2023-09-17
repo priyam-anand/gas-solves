@@ -39,4 +39,8 @@ export class QuestionDto {
   @IsNumber()
   @IsNotEmpty()
   points: number;
+
+  @IsString()
+  @IsNotEmpty()
+  abi: string;
 }

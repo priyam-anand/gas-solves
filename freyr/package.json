@@ -39,6 +39,7 @@
     "helmet": "^7.0.0",
     "nest-winston": "^1.9.3",
     "passport": "^0.6.0",
+    "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",

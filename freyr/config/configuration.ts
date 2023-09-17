@@ -12,5 +12,6 @@ export default () => {
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+    ADMIN_API_KEY: process.env.ADMIN_API_KEY,
   };
 };

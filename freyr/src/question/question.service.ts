@@ -126,6 +126,7 @@ export class QuestionService {
       partialEntity.pointes = questionData.points
         ? questionData.points
         : question.pointes;
+      partialEntity.abi = questionData.abi ? questionData.abi : question.abi;
 
       const newResult = await this.questionRepoService.updateQuestion(
         questionData.id,
@@ -168,6 +169,52 @@ export class QuestionService {
       );
       throw new HttpException(
         { error: 'Error in deleting question', reason: error.message },
+        error.status,
+      );
+    }
+  }
+
+  async uploadTestFiles(questionIds: number[], files: Express.Multer.File[]) {
+    try {
+      this.logger.info(
+        `Uploading test cases for questions [questionIds : ${JSON.stringify(
+          questionIds,
+        )}]`,
+      );
+
+      if (questionIds.length !== files.length) {
+        throw new GenericError(
+          'Number of questions and files uploaded do not match',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      for (let i = 0; i < questionIds.length; i++) {
+        const question = await this.questionRepoService.getQuestion({
+          where: { id: questionIds[i] },
+        });
+        if (!question) {
+          throw new GenericError(
+            `Question with given id - ${questionIds[i]} not found`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        await this.questionRepoService.uploadTestCase(questionIds[i], files[i]);
+      }
+
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Error in uploading test cases for questions [questionIds : ${JSON.stringify(
+          questionIds,
+        )}] : ${error.stack}`,
+      );
+      throw new HttpException(
+        {
+          error: 'Error in uploading test cases files',
+          reason: error.message,
+        },
         error.status,
       );
     }
