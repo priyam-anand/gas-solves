@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -18,6 +19,7 @@ import { UserAddress } from 'src/common/decorators/user-address.decorator';
 import { UpdateQuestionDto } from './dto/updateQuestion.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadQuestionBoilerplateDto } from './dto/uploadQuestionBoilerplate.dto';
+import { AdminApiAuthGuard } from 'src/common/guards/admin-api-auth.guard';
 
 @Controller('question')
 export class QuestionController {
@@ -31,7 +33,7 @@ export class QuestionController {
     return await this.questionService.getQuestion(questionId, address);
   }
 
-  // admin only api
+  @UseGuards(AdminApiAuthGuard)
   @Post('upload')
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(FilesInterceptor('files'))
@@ -42,21 +44,21 @@ export class QuestionController {
     return await this.questionService.uploadBoilerplateCode(body.ids, files);
   }
 
-  // admin only api
+  @UseGuards(AdminApiAuthGuard)
   @Post('create')
   @UsePipes(new ValidationPipe({ transform: true }))
   async createQuestion(@Body() questionData: CreateQuestionDto) {
     return this.questionService.createQuestion(questionData);
   }
 
-  // admin only api
+  @UseGuards(AdminApiAuthGuard)
   @Patch('update')
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateQuestion(@Body() questionData: UpdateQuestionDto) {
     return this.questionService.updateQuestion(questionData);
   }
 
-  // admin only api
+  @UseGuards(AdminApiAuthGuard)
   @Delete(':questionId')
   async deleteQuestion(@Param('questionId', ParseIntPipe) questionId: number) {
     return this.questionService.deleteQuestion(questionId);
