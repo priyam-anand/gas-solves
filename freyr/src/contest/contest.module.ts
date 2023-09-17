@@ -10,9 +10,11 @@ import { RepoModule } from 'src/repo/repo.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserAddressMiddleware } from 'src/common/middlewares/user-address.middleware';
 import { PagerMiddleware } from 'src/common/middlewares/pager.middleware';
+import { AdminApiAuthGuard } from 'src/common/guards/admin-api-auth.guard';
+import { AdminApiAuthStrategy } from 'src/common/guards/admin-api-auth.strategy';
 
 @Module({
-  providers: [ContestService],
+  providers: [ContestService, AdminApiAuthGuard, AdminApiAuthStrategy],
   controllers: [ContestController],
   imports: [JwtModule.register({}), RepoModule],
 })

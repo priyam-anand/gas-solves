@@ -27,6 +27,12 @@ export class Question extends BaseEntity {
   @Column()
   pointes: number;
 
+  @Column()
+  abi: string;
+
+  @Column({ nullable: true })
+  test_file: string;
+
   @ManyToOne(() => Contest, (contest) => contest.questions)
   @JoinColumn({ name: 'contest_id' })
   contest: Contest;

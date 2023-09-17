@@ -76,7 +76,7 @@ export class SubmissionService {
           HttpStatus.NOT_FOUND,
         );
       }
-      if (!question.boilerplate_code) {
+      if (!question.boilerplate_code || !question.test_file) {
         throw new GenericError(
           'Question is not ready to take submissions',
           HttpStatus.BAD_REQUEST,

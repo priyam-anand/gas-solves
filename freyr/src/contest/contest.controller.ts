@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,19 +15,20 @@ import { ContestService } from './contest.service';
 import { CreateContestDto } from './dto/CreateContest.dto';
 import { UserAddress } from 'src/common/decorators/user-address.decorator';
 import { UpdateContestDto } from './dto/UpdateContest.dto';
+import { AdminApiAuthGuard } from 'src/common/guards/admin-api-auth.guard';
 
 @Controller('contest')
 export class ContestController {
   constructor(private contestService: ContestService) {}
 
-  // admin only api, add auth guard with admin's api key
+  @UseGuards(AdminApiAuthGuard)
   @Post('create')
   @UsePipes(new ValidationPipe({ transform: true }))
   async createContest(@Body() contestData: CreateContestDto) {
     return await this.contestService.createContest(contestData);
   }
 
-  // admin only api, add auth guard with admin's api key
+  @UseGuards(AdminApiAuthGuard)
   @Patch('update')
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateContest(@Body() contestData: UpdateContestDto) {
