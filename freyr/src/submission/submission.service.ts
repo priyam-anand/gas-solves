@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GenericError } from 'src/common/errors/generic.error';
-import { SUBMISSION_QUEUE } from 'src/common/utils/constants';
+import { PROCESS_PENDING, SUBMISSION_QUEUE } from 'src/common/utils/constants';
 import { createFileKey } from 'src/common/utils/keys';
 import { Question } from 'src/repo/entities/question.entity';
 import { StorageFile } from 'src/repo/entities/storageFile.entity';
@@ -96,7 +96,7 @@ export class SubmissionService {
         codeFile.public_url,
       );
 
-      const job = await this.submissionQueue.add({
+      const job = await this.submissionQueue.add(PROCESS_PENDING, {
         questionId: question.id,
         submissionId: submissionId,
       });

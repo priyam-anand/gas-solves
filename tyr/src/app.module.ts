@@ -12,6 +12,7 @@ import { Submission } from './repo/entities/submission.entity';
 import { User } from './repo/entities/user.entity';
 import { QueueModule } from './queue/queue.module';
 import { RepoModule } from './repo/repo.module';
+import { ObserverModule } from './observer/observer.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { RepoModule } from './repo/repo.module';
     }),
     QueueModule.forRoot(),
     RepoModule,
+    ObserverModule,
   ],
   controllers: [],
   providers: [],
